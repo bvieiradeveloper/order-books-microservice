@@ -8,39 +8,60 @@ on:
 
 jobs:
   validate-services:
-     runs-on: ubuntu-latest
-     
-     steps:
+    runs-on: ubuntu-latest
+
+    steps:
       # 1. Checkout do repositório
-      - uses: actions/checkout@v4
       - name: Checkout code
-        run: docker build . --file Dockerfile --tag my-image-name:$(date +%s)
+        uses: actions/checkout@v4
 
-      # 2. Checkout do repositório
-      - name: Set up Docker Buildx
-        uses: docker/setup-qemu-action@v2
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v2
+      # 2. Configurar Java (com Gradle)
+      - name: Set up JDK
+        uses: actions/setup-java@v3
+        with:
+          java-version: '17'  # Altere para a versão do Java que você está usando
+          distribution: 'temurin'  # Ou 'corretto', 'zulu', etc.
 
-      # 3. Iniciar os serviços com docker-compose
+      # 3. Instalar Docker
+      - name: Install Docker
+        run: |
+          curl -fsSL https://get.docker.com -o get-docker.sh
+          sudo sh get-docker.sh
+
+      # 4. Instalar Docker Compose
+      - name: Install Docker Compose
+        run: |
+          sudo curl -L "https://github.com/docker/compose/releases/download/v2.23.0/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
+          sudo chmod +x /usr/local/bin/docker-compose
+          docker-compose --version
+
+      # 5. Buildar a aplicação com Gradle
+      - name: Build application with Gradle
+        run: |
+          cd ./order-service/  # Entra no diretório do projeto
+          chmod +x ./gradlew    # Dá permissão de execução ao gradlew
+          ./gradlew build -x test  # Executa o build do Gradle, ignorando os testes
+          cd ..
+
+      # 6. Iniciar os serviços com docker-compose
       - name: Start services with docker-compose
         run: |
           docker-compose up -d
-          
-      # 4. Verificar se o MongoDB está acessível
+
+      # 7. Verificar se o MongoDB está acessível
       - name: Check MongoDB connection
         run: |
-          docker-compose exec order-db mongosh mongodb://admin:123456@localhost:27017 --eval "db.runCommand({ ping: 1 })"
+          echo "Waiting for MongoDB to start..."
+          sleep 10  # Espera 10 segundos para o MongoDB inicializar
+          docker-compose exec order-db mongosh mongodb://admin:123456@order-db:27017 --eval "db.runCommand({ ping: 1 })"
 
-      # 5. Verificar se o order-service está respondendo
+      # 8. Verificar se o order-service está respondendo
       - name: Check order-service health
         run: |
-          curl --retry 5 --retry-delay 10 --retry-all-errors http://localhost:3000/ /actuator/health
+          curl --retry 5 --retry-delay 10 --retry-all-errors http://localhost:3000/actuator/health
 
-      # 6. Parar e remover os containers após a validação
+      # 9. Parar e remover os containers após a validação
       - name: Stop and remove containers
         if: always()
         run: |
           docker-compose down
-      
-
