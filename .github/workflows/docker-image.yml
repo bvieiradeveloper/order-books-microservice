@@ -58,7 +58,14 @@ jobs:
       # 8. Verificar se o order-service está respondendo
       - name: Check order-service health
         run: |
-          curl --retry 5 --retry-delay 10 --retry-all-errors http://localhost:3000/actuator/health
+          response=$(curl --retry 5 --retry-delay 10 --retry-all-errors -s http://localhost:3000/actuator/health)
+          status=$(echo $response | jq -r '.status')
+          if [ "$status" != "UP" ]; then
+            echo "Health check failed: Status is not UP"
+            exit 1
+          else
+            echo "Health check passed: Status is UP"
+          fi
 
       # 9. Parar e remover os containers após a validação
       - name: Stop and remove containers
