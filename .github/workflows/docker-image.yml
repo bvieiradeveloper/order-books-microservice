@@ -38,7 +38,7 @@ jobs:
       # 5. Buildar a aplicação com Gradle
       - name: Build application with Gradle
         run: |
-          cd /order-service
+          cd .\order-service\
           ./gradlew build -x test  # Ignora os testes durante o build
           cd ..
 
