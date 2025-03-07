@@ -8,16 +8,17 @@ on:
 
 jobs:
   validate-services:
-     runs-on: ubuntu-latest
-     
-     steps:
-      # 1. Checkout do repositório
-      - uses: actions/checkout@v4
-      - name: Checkout code
+    runs-on: ubuntu-latest
 
-      # 2. Checkout do repositório
-      - name: Set up Docker Buildx
+    steps:
+      # 1. Checkout do repositório
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      # 2. Configurar Docker Buildx e QEMU
+      - name: Set up Docker QEMU
         uses: docker/setup-qemu-action@v2
+
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v2
 
@@ -25,21 +26,19 @@ jobs:
       - name: Start services with docker-compose
         run: |
           docker-compose up -d
-          
+
       # 4. Verificar se o MongoDB está acessível
       - name: Check MongoDB connection
         run: |
-          docker-compose exec order-db mongosh mongodb://admin:123456@localhost:27017 --eval "db.runCommand({ ping: 1 })"
+          docker-compose exec order-db mongosh mongodb://admin:123456@order-db:27017 --eval "db.runCommand({ ping: 1 })"
 
       # 5. Verificar se o order-service está respondendo
       - name: Check order-service health
         run: |
-          curl --retry 5 --retry-delay 10 --retry-all-errors http://localhost:3000/ /actuator/health
+          curl --retry 5 --retry-delay 10 --retry-all-errors http://localhost:3000/actuator/health
 
       # 6. Parar e remover os containers após a validação
       - name: Stop and remove containers
         if: always()
         run: |
           docker-compose down
-      
-
