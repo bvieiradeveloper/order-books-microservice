@@ -14,7 +14,6 @@ jobs:
       # 1. Checkout do repositório
       - uses: actions/checkout@v4
       - name: Checkout code
-        run: docker build . --file Dockerfile --tag my-image-name:$(date +%s)
 
       # 2. Checkout do repositório
       - name: Set up Docker Buildx
