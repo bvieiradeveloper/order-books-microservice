@@ -1,5 +1,6 @@
 package br.com.microservices.orchestrated.orderservice.core.service;
 
+import br.com.microservices.orchestrated.orderservice.core.document.Event;
 import br.com.microservices.orchestrated.orderservice.core.document.Order;
 import br.com.microservices.orchestrated.orderservice.core.dto.OrderRequest;
 import br.com.microservices.orchestrated.orderservice.core.repository.OrderRepository;
@@ -15,7 +16,7 @@ import java.util.UUID;
 public class OrderService {
     private static final String TRANSACTION_ID_PATTERN = "%s_%s";
     private final OrderRepository repository;
-
+    private final EventService eventService;
     public Order createOrder(OrderRequest orderRequest){
         var order = Order
                 .builder()
@@ -26,7 +27,19 @@ public class OrderService {
                 )
                 .build();
         repository.save(order);
-
+        createPayload(order);
         return order;
+    }
+
+    private Event createPayload(Order order){
+        var event = Event
+                    .builder()
+                    .payload(order)
+                .orderId(order.getId())
+                .transactionId(order.getTransactionId())
+                .createdAt(LocalDateTime.now())
+                .build();
+        eventService.save(event);
+        return event;
     }
 }
