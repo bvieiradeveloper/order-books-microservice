@@ -46,7 +46,7 @@ jobs:
       # 6. Iniciar os serviços com docker-compose
       - name: Start services with docker-compose
         run: |
-          docker-compose up -d
+          docker-compose -f docker-compose.yml up --build -d
 
       # 7. Verificar se o MongoDB está acessível
       - name: Check MongoDB connection

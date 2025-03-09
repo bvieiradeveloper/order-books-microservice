@@ -3,7 +3,9 @@ package br.com.microservices.orchestrated.orderservice.core.service;
 import br.com.microservices.orchestrated.orderservice.core.document.Event;
 import br.com.microservices.orchestrated.orderservice.core.document.Order;
 import br.com.microservices.orchestrated.orderservice.core.dto.OrderRequest;
+import br.com.microservices.orchestrated.orderservice.core.producer.SagaProducer;
 import br.com.microservices.orchestrated.orderservice.core.repository.OrderRepository;
+import br.com.microservices.orchestrated.orderservice.utils.JsonUtil;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -17,6 +19,8 @@ public class OrderService {
     private static final String TRANSACTION_ID_PATTERN = "%s_%s";
     private final OrderRepository repository;
     private final EventService eventService;
+    private final SagaProducer produce;
+    private final JsonUtil jsonUtil;
     public Order createOrder(OrderRequest orderRequest){
         var order = Order
                 .builder()
@@ -27,7 +31,7 @@ public class OrderService {
                 )
                 .build();
         repository.save(order);
-        createPayload(order);
+        produce.sendEvent(jsonUtil.toJson(createPayload(order)));
         return order;
     }
 
