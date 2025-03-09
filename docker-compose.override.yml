@@ -11,17 +11,6 @@ services:
       - MONGO_INITDB_ROOT_PASSWORD=123456
     image: mongo:latest
 
-  order-service:
-    build: './order-service'
-    container_name: order-service
-    depends_on:
-      - order-db
-    networks:
-      - orchestrator-saga
-    environment:
-      - MONGO_DB_URI=mongodb://admin:123456@order-db:27017
-    ports:
-      - 3000:3000
 
   kafka:
     container_name: kafka
@@ -41,6 +30,14 @@ services:
       KAFKA_RESTART_ATTEMPTS: "10"
       KAFKA_RESTART_DELAY: "5"
       ZOOKEEPER_AUTOPURGE_PURGE_INTERVAL: "0"
+    healthcheck:
+      test: [
+        "CMD-SHELL",
+        "sleep 3s && /opt/kafka/bin/kafka-topics.sh --list --bootstrap-server kafka:9092 && echo 'Kafka is ready' || exit 1"
+      ]
+      interval: 10s
+      timeout: 5s
+      retries: 10
     volumes:
       - ./data/kafka/data:/var/lib/kafka/data
 
@@ -61,6 +58,22 @@ services:
           brokers: ["kafka:29092"]
     depends_on:
       - "kafka"
+
+  order-service:
+    build: './order-service'
+    container_name: order-service
+    depends_on:
+      kafka:
+        condition: service_healthy
+      order-db:
+        condition: service_started
+    networks:
+      - orchestrator-saga
+    environment:
+      - MONGO_DB_URI=mongodb://admin:123456@order-db:27017
+      - KAFKA_BROKER=kafka:29092
+    ports:
+      - 3000:3000
 
 networks:
   orchestrator-saga:
