@@ -11,6 +11,22 @@ services:
       - MONGO_INITDB_ROOT_PASSWORD=123456
     image: mongo:latest
 
+  product-db:
+    image: postgres:latest
+    container_name: product-db
+    networks:
+      orchestrator-saga:
+    environment:
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_USER=postgres
+      - POSTGRES_DB=product-db
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U postgres" ]
+      interval: 5s
+      timeout: 10s
+      retries: 5
+    ports:
+      - 5432:5432
 
   kafka:
     container_name: kafka
@@ -74,6 +90,26 @@ services:
       - KAFKA_BROKER=kafka:29092
     ports:
       - 3000:3000
+
+  product-validation-service:
+    build: './product-validation-service'
+    container_name: product-validation-service
+    depends_on:
+      product-db:
+        condition: service_started
+      kafka:
+        condition: service_healthy
+    networks:
+      - orchestrator-saga
+    environment:
+      - KAFKA_BROKER=kafka:29092
+      - DB_HOST=product-db
+      - DB_PORT=5432
+      - DB_NAME=product-db
+      - DB_USER=postgres
+      - DB_PASSWORD=postgres
+    ports:
+      - 9090:9090
 
 networks:
   orchestrator-saga:
