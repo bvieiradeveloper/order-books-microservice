@@ -35,10 +35,18 @@ jobs:
           sudo chmod +x /usr/local/bin/docker-compose
           docker-compose --version
 
-      # 5. Buildar a aplicação com Gradle
+      # 5. Buildar Order Service com Gradle
       - name: Build application with Gradle
         run: |
           cd ./order-service/  # Entra no diretório do projeto
+          chmod +x ./gradlew    # Dá permissão de execução ao gradlew
+          ./gradlew build -x test  # Executa o build do Gradle, ignorando os testes
+          cd ..
+
+      # 5.1 Buildar a Product Validation Service com Gradle
+      - name: Build application with Gradle
+        run: |
+          cd ./product-validation-service/  # Entra no diretório do projeto
           chmod +x ./gradlew    # Dá permissão de execução ao gradlew
           ./gradlew build -x test  # Executa o build do Gradle, ignorando os testes
           cd ..
@@ -82,14 +90,37 @@ jobs:
           echo "Found topics: $topics"
 
           # Verifica se os tópicos esperados estão presentes
-          if echo "$topics" | grep -q "notify-ending" && echo "$topics" | grep -q "start-saga"; then
+          if echo "$topics" | grep -q "notify-ending" && 
+             echo "$topics" | grep -q "start-saga" &&
+             echo "$topics" | grep -q "product-validation-success" &&
+             echo "$topics" | grep -q "product-validation-fail"; then
             echo "All expected topics were created."
           else
             echo "Error: Expected topics not found!"
             exit 1
           fi
+      
+
+      # 11. Verificar se a tabela foi criada e contém os valores padrão
+      - name: Verify table and default values in PostgreSQL
+        run: |
+          echo "Verifying table and default values..."
+          # Executa a consulta SQL para verificar a tabela
+          OUTPUT=$(docker-compose exec product-db psql -U postgres -d product-db -c "SELECT * FROM product;" -t)
+          echo "Query result: $OUTPUT"
           
-      # 11 Parar e remover os containers após a validação
+          # Verifica se o valor padrão está presente
+          if echo "$OUTPUT" | grep -q "COMIC_BOOKS" &&
+             echo "$OUTPUT" | grep -q "BOOKS" &&
+             echo "$OUTPUT" | grep -q "MOVIES" &&
+             echo "$OUTPUT" | grep -q "MUSIC"; then
+            echo "Table exists and contains default values!"
+          else
+            echo "Error: Table or default values are missing!"
+            exit 1
+          fi  
+
+      # 12 Parar e remover os containers após a validação
       - name: Stop and remove containers
         if: always()
         run: |
