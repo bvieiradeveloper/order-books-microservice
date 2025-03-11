@@ -38,7 +38,15 @@ public class ProductValidationService {
             handleSuccess(event);
         } catch (Exception ex) {
             log.error("Error trying to validate products: ",ex);
+            handleFailedCurrentNotExecuted(event, ex.getMessage());
         }
+    }
+
+    private void handleFailedCurrentNotExecuted(Event event, String message) {
+        event.setStatus(ESagaStatus.ROLLBACK_PENDING);
+        event.setSource(CURRENT_SOURCE);
+        addHistory(event,"Fail to validate products: ".concat(message));
+        producer.sendEvent(jsonUtil.toJson(event));
     }
 
     private void handleSuccess(Event event) {
@@ -72,7 +80,7 @@ public class ProductValidationService {
 
     private void checkCurrentValidation(Event event) {
         validateProductsInformed(event);
-        if (validationRepository.existsByOrderIdAndTransactionId(event.getPayload().getTransactionId(),
+        if (validationRepository.existsByOrderIdAndTransactionId(event.getPayload().getId(),
                                                                  event.getPayload().getTransactionId())){
             throw new ValidationException("There's another transactionId for this validation.!");
         }
