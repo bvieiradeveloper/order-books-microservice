@@ -99,8 +99,28 @@ jobs:
             echo "Error: Expected topics not found!"
             exit 1
           fi
+      
+
+      # 11. Verificar se a tabela foi criada e contém os valores padrão
+      - name: Verify table and default values in PostgreSQL
+        run: |
+          echo "Verifying table and default values..."
+          # Executa a consulta SQL para verificar a tabela
+          OUTPUT=$(docker-compose exec product-db psql -U postgres -d product-db -c "SELECT * FROM product;" -t)
+          echo "Query result: $OUTPUT"
           
-      # 11 Parar e remover os containers após a validação
+          # Verifica se o valor padrão está presente
+          if echo "$OUTPUT" | grep -q "COMIC_BOOKS" &&
+             echo "$OUTPUT" | grep -q "BOOKS" &&
+             echo "$OUTPUT" | grep -q "MOVIES" &&
+             echo "$OUTPUT" | grep -q "MUSIC"; then
+            echo "Table exists and contains default values!"
+          else
+            echo "Error: Table or default values are missing!"
+            exit 1
+          fi  
+
+      # 12 Parar e remover os containers após a validação
       - name: Stop and remove containers
         if: always()
         run: |
