@@ -35,7 +35,7 @@ jobs:
           sudo chmod +x /usr/local/bin/docker-compose
           docker-compose --version
 
-      # 5. Buildar a aplicação com Gradle
+      # 5. Buildar Order Service com Gradle
       - name: Build application with Gradle
         run: |
           cd ./order-service/  # Entra no diretório do projeto
@@ -43,7 +43,7 @@ jobs:
           ./gradlew build -x test  # Executa o build do Gradle, ignorando os testes
           cd ..
 
-      # 5.1 Buildar a aplicação com Gradle
+      # 5.1 Buildar a Product Validation Service com Gradle
       - name: Build application with Gradle
         run: |
           cd ./product-validation-service/  # Entra no diretório do projeto
