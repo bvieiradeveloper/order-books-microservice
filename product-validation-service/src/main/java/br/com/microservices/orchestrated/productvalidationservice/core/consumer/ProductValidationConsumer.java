@@ -30,5 +30,6 @@ public class ProductValidationConsumer {
     )
     public void consumerProductValidationFailEvent(String payload) {
         log.info("Receiving product validation fail event {} from product-validation-fail topic",payload);
+        service.rollbackEvent(jsonUtil.toEvent(payload));
     }
 }

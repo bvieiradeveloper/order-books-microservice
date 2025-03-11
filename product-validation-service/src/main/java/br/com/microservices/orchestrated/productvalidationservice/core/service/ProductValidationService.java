@@ -40,6 +40,7 @@ public class ProductValidationService {
             log.error("Error trying to validate products: ",ex);
             handleFailedCurrentNotExecuted(event, ex.getMessage());
         }
+        producer.sendEvent(jsonUtil.toJson(event));
     }
 
     private void handleFailedCurrentNotExecuted(Event event, String message) {
@@ -111,5 +112,22 @@ public class ProductValidationService {
         if (!productRepository.existsByCode(code)){
             throw new ValidationException("Product with code " + code + " does not exist!");
         }
+    }
+
+    public void rollbackEvent(Event event){
+        changeValidateFail(event);
+        event.setSource(CURRENT_SOURCE);
+        event.setStatus(ESagaStatus.FAIL);
+        addHistory(event, "Rollback executed on product validation!");
+        producer.sendEvent(jsonUtil.toJson(event));
+    }
+
+    private void changeValidateFail(Event event) {
+        validationRepository
+                .findByOrderIdAndTransactionId(event.getPayload().getId(), event.getPayload().getTransactionId())
+                .ifPresentOrElse(validation -> {
+                    validation.setSuccess(false);
+                    validationRepository.save(validation);
+                }, () -> createValidation(event, false));
     }
 }
