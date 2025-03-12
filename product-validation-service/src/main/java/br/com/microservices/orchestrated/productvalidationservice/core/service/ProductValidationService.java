@@ -6,9 +6,9 @@ import br.com.microservices.orchestrated.productvalidationservice.core.model.Val
 import br.com.microservices.orchestrated.productvalidationservice.core.producer.KafkaProducer;
 import br.com.microservices.orchestrated.productvalidationservice.core.repository.ProductRepository;
 import br.com.microservices.orchestrated.productvalidationservice.core.repository.ValidationRepository;
-import br.com.microservices.orchestrated.productvalidationservice.dto.Event;
-import br.com.microservices.orchestrated.productvalidationservice.dto.History;
-import br.com.microservices.orchestrated.productvalidationservice.dto.OrderProducts;
+import br.com.microservices.orchestrated.productvalidationservice.core.dto.Event;
+import br.com.microservices.orchestrated.productvalidationservice.core.dto.History;
+import br.com.microservices.orchestrated.productvalidationservice.core.dto.OrderProducts;
 import br.com.microservices.orchestrated.productvalidationservice.utils.JsonUtil;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
