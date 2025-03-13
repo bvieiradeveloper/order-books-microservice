@@ -97,7 +97,7 @@ jobs:
              echo "$topics" | grep -q "product-validation-success" &&
              echo "$topics" | grep -q "product-validation-fail" &&
              echo "$topics" | grep -q "payment-fail" &&
-             echo "$topics" | grep -q "payment-success" &&; then
+             echo "$topics" | grep -q "payment-success"; then
             echo "All expected topics were created."
           else
             echo "Error: Expected topics not found!"
