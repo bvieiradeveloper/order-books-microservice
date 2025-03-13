@@ -1,6 +1,6 @@
-package br.com.microservices.orchestrated.productvalidationservice.utils;
+package br.com.microservices.orchestrated.paymentservice.utils;
 
-import br.com.microservices.orchestrated.productvalidationservice.core.dto.Event;
+import br.com.microservices.orchestrated.paymentservice.core.dto.Event;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Component;

@@ -36,7 +36,7 @@ jobs:
           docker-compose --version
 
       # 5. Buildar Order Service com Gradle
-      - name: Build application with Gradle
+      - name: Build order-service with Gradle
         run: |
           cd ./order-service/  # Entra no diretório do projeto
           chmod +x ./gradlew    # Dá permissão de execução ao gradlew
@@ -47,6 +47,14 @@ jobs:
       - name: Build application with Gradle
         run: |
           cd ./product-validation-service/  # Entra no diretório do projeto
+          chmod +x ./gradlew    # Dá permissão de execução ao gradlew
+          ./gradlew build -x test  # Executa o build do Gradle, ignorando os testes
+          cd ..
+
+      # 5.2 Buildar a Payment  Service com Gradle
+      - name: Build payment-service with Gradle
+        run: |
+          cd ./payment-service/  # Entra no diretório do projeto
           chmod +x ./gradlew    # Dá permissão de execução ao gradlew
           ./gradlew build -x test  # Executa o build do Gradle, ignorando os testes
           cd ..
@@ -75,14 +83,8 @@ jobs:
             echo "Health check passed: Status is UP"
           fi
 
+
       # 9. Verificar se os tópicos Kafka foram criados
-      - name: Check Kafka topics
-        run: |
-          echo "Verifying Kafka topics..."
-          docker exec kafka /opt/kafka/bin/kafka-topics.sh --list --bootstrap-server localhost:9092
-          echo "Expected topics: notify-ending, start-saga"
-      
-      # 10. Verificar se os tópicos Kafka foram criados
       - name: Check Kafka topics
         run: |
           echo "Verifying Kafka topics..."
@@ -93,7 +95,9 @@ jobs:
           if echo "$topics" | grep -q "notify-ending" && 
              echo "$topics" | grep -q "start-saga" &&
              echo "$topics" | grep -q "product-validation-success" &&
-             echo "$topics" | grep -q "product-validation-fail"; then
+             echo "$topics" | grep -q "product-validation-fail" &&
+             echo "$topics" | grep -q "payment-fail" &&
+             echo "$topics" | grep -q "payment-success" &&; then
             echo "All expected topics were created."
           else
             echo "Error: Expected topics not found!"
@@ -101,7 +105,7 @@ jobs:
           fi
       
 
-      # 11. Verificar se a tabela foi criada e contém os valores padrão
+      # 10. Verificar se a tabela foi criada e contém os valores padrão
       - name: Verify table and default values in PostgreSQL
         run: |
           echo "Verifying table and default values..."
@@ -120,7 +124,7 @@ jobs:
             exit 1
           fi  
 
-      # 12 Parar e remover os containers após a validação
+      # 11 Parar e remover os containers após a validação
       - name: Stop and remove containers
         if: always()
         run: |

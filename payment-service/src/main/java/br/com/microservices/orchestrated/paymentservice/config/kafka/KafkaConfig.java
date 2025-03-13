@@ -1,4 +1,4 @@
-package br.com.microservices.orchestrated.productvalidationservice.config.kafka;
+package br.com.microservices.orchestrated.paymentservice.config.kafka;
 
 import lombok.RequiredArgsConstructor;
 import org.apache.kafka.clients.admin.NewTopic;
@@ -33,17 +33,17 @@ public class KafkaConfig {
     @Value("${spring.kafka.consumer.auto-offset-reset}")
     private String autoOffsetReset;
 
-    @Value("${spring.kafka.topic.product-validation-success}")
-    private String productValidationSuccessTopic;
+    @Value("${spring.kafka.topic.payment-success}")
+    private String paymentSuccessTopic;
 
-    @Value("${spring.kafka.topic.product-validation-fail}")
-    private String productValidationFailTopic;
+    @Value("${spring.kafka.topic.payment-fail}")
+    private String paymentFailTopic;
 
     @Value("${spring.kafka.topic.orchestrator}")
     private String orchestratorTopic;
 
     @Bean
-    public ConsumerFactory<String, String> consumerFactory(){
+    public ConsumerFactory<String, String> consumerFactory() {
         return new DefaultKafkaConsumerFactory<>(consumerProps());
     }
 
@@ -85,13 +85,13 @@ public class KafkaConfig {
     }
 
     @Bean
-    public NewTopic productValidationSuccess() {
-        return buildTopic(productValidationSuccessTopic);
+    public NewTopic paymentSuccess() {
+        return buildTopic(paymentSuccessTopic);
     }
 
     @Bean
-    public NewTopic productValidationFail() {
-        return buildTopic(productValidationFailTopic);
+    public NewTopic paymentFail() {
+        return buildTopic(paymentFailTopic);
     }
 
     @Bean
