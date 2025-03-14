@@ -31,6 +31,13 @@
         </option>
       </GradleProjectSettings>
       <GradleProjectSettings>
+        <compositeConfiguration>
+          <compositeBuild compositeDefinitionSource="IDE">
+            <builds>
+              <build path="$PROJECT_DIR$/inventory-service" name="inventory-service" />
+            </builds>
+          </compositeBuild>
+        </compositeConfiguration>
         <option name="externalProjectPath" value="$PROJECT_DIR$/product-validation-service" />
         <option name="gradleJvm" value="17" />
         <option name="modules">
