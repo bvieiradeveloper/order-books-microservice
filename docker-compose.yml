@@ -45,6 +45,23 @@ services:
     ports:
         - 5433:5432
 
+  inventory-db:
+    image: postgres:latest
+    container_name: inventory-db
+    networks:
+      - orchestrator-saga
+    environment:
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_USER=postgres
+      - POSTGRES_DB=inventory-db
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U postgres" ]
+      interval: 5s
+      timeout: 10s
+      retries: 5
+    ports:
+      - 5434:5432
+
   kafka:
     container_name: kafka
     image: obsidiandynamics/kafka
