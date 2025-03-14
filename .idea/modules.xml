@@ -4,6 +4,8 @@
     <modules>
       <module fileurl="file://$PROJECT_DIR$/.idea/OrderBooks.iml" filepath="$PROJECT_DIR$/.idea/OrderBooks.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/order-service.main.iml" filepath="$PROJECT_DIR$/.idea/modules/order-service.main.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/payment-service.main.iml" filepath="$PROJECT_DIR$/.idea/modules/payment-service.main.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/product-validation-service.main.iml" filepath="$PROJECT_DIR$/.idea/modules/product-validation-service.main.iml" />
     </modules>
   </component>
 </project>
