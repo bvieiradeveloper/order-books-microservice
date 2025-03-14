@@ -1,5 +1,6 @@
 package br.com.com.microservices.orchestrated.inventoryservice.core.dto;
 
+import br.com.com.microservices.orchestrated.inventoryservice.core.enums.ESagaStatus;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;

@@ -1,6 +1,6 @@
 package br.com.com.microservices.orchestrated.inventoryservice.utils;
 
-import br.com.microservices.orchestrated.paymentservice.core.dto.Event;
+import br.com.com.microservices.orchestrated.inventoryservice.core.dto.Event;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Component;

@@ -33,11 +33,11 @@ public class KafkaConfig {
     @Value("${spring.kafka.consumer.auto-offset-reset}")
     private String autoOffsetReset;
 
-    @Value("${spring.kafka.topic.investment-success}")
-    private String investmentSuccessTopic;
+    @Value("${spring.kafka.topic.inventory-success}")
+    private String inventorySuccessTopic;
 
-    @Value("${spring.kafka.topic.investment-fail}")
-    private String investmentFailTopic;
+    @Value("${spring.kafka.topic.inventory-fail}")
+    private String inventoryFailTopic;
 
     @Value("${spring.kafka.topic.orchestrator}")
     private String orchestratorTopic;
@@ -85,13 +85,13 @@ public class KafkaConfig {
     }
 
     @Bean
-    public NewTopic investmentSuccess() {
-        return buildTopic(investmentSuccessTopic);
+    public NewTopic inventorySuccess() {
+        return buildTopic(inventorySuccessTopic);
     }
 
     @Bean
-    public NewTopic investmentFail() {
-        return buildTopic(investmentFailTopic);
+    public NewTopic inventoryFail() {
+        return buildTopic(inventoryFailTopic);
     }
 
     @Bean
