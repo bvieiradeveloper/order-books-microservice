@@ -169,7 +169,7 @@ services:
     build: './inventory-service'
     container_name: inventory-service
     depends_on:
-      inventory-db-db:
+      inventory-db:
         condition: service_started
       kafka:
         condition: service_healthy
