@@ -119,7 +119,7 @@ jobs:
           echo "Verifying table and default values..."
           # Executa a consulta SQL para verificar a tabela
           OUTPUT_A=$(docker-compose exec product-db psql -U postgres -d product-db -c "SELECT * FROM product;" -t)
-          OUTPUT_B=$(docker-compose exec inventory-db psql -U postgres -d product-db -c "SELECT * FROM inventory;" -t)
+          OUTPUT_B=$(docker-compose exec inventory-db psql -U postgres -d inventory-db -c "SELECT * FROM inventory;" -t)
           echo "Query result: $OUTPUT_A"
           echo "Query result: $OUTPUT_B"
           
