@@ -30,5 +30,6 @@ public class InventoryConsumer {
     )
     public void consumerInventoryFailEvent(String payload){
         log.info("Receiving inventory fail event {} from inventory-fail topic",payload);
+        service.returnInventoryToPreviousValues(jsonUtil.toEvent(payload));
     }
 }
