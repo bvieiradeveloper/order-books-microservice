@@ -44,7 +44,7 @@ jobs:
           cd ..
 
       # 5.1 Buildar a Product Validation Service com Gradle
-      - name: Build application with Gradle
+      - name: Build product-validation-service with Gradle
         run: |
           cd ./product-validation-service/  # Entra no diretório do projeto
           chmod +x ./gradlew    # Dá permissão de execução ao gradlew
@@ -55,6 +55,14 @@ jobs:
       - name: Build payment-service with Gradle
         run: |
           cd ./payment-service/  # Entra no diretório do projeto
+          chmod +x ./gradlew    # Dá permissão de execução ao gradlew
+          ./gradlew build -x test  # Executa o build do Gradle, ignorando os testes
+          cd ..
+
+      # 5.3 Buildar a inventory  Service com Gradle
+      - name: Build inventory-service with Gradle
+        run: |
+          cd ./inventory-service/  # Entra no diretório do projeto
           chmod +x ./gradlew    # Dá permissão de execução ao gradlew
           ./gradlew build -x test  # Executa o build do Gradle, ignorando os testes
           cd ..
@@ -97,7 +105,9 @@ jobs:
              echo "$topics" | grep -q "product-validation-success" &&
              echo "$topics" | grep -q "product-validation-fail" &&
              echo "$topics" | grep -q "payment-fail" &&
-             echo "$topics" | grep -q "payment-success"; then
+             echo "$topics" | grep -q "payment-success" &&
+             echo "$topics" | grep -q "inventory-fail" &&
+             echo "$topics" | grep -q "inventory-success"; then
             echo "All expected topics were created."
           else
             echo "Error: Expected topics not found!"
@@ -110,14 +120,27 @@ jobs:
         run: |
           echo "Verifying table and default values..."
           # Executa a consulta SQL para verificar a tabela
-          OUTPUT=$(docker-compose exec product-db psql -U postgres -d product-db -c "SELECT * FROM product;" -t)
-          echo "Query result: $OUTPUT"
+          OUTPUT_A=$(docker-compose exec product-db psql -U postgres -d product-db -c "SELECT * FROM product;" -t)
+          OUTPUT_B=$(docker-compose exec inventory-db psql -U postgres -d inventory-db -c "SELECT * FROM inventory;" -t)
+          echo "Query result: $OUTPUT_A"
+          echo "Query result: $OUTPUT_B"
           
           # Verifica se o valor padrão está presente
-          if echo "$OUTPUT" | grep -q "COMIC_BOOKS" &&
-             echo "$OUTPUT" | grep -q "BOOKS" &&
-             echo "$OUTPUT" | grep -q "MOVIES" &&
-             echo "$OUTPUT" | grep -q "MUSIC"; then
+          if echo "$OUTPUT_A" | grep -q "COMIC_BOOKS" &&
+             echo "$OUTPUT_A" | grep -q "BOOKS" &&
+             echo "$OUTPUT_A" | grep -q "MOVIES" &&
+             echo "$OUTPUT_A" | grep -q "MUSIC"; then
+            echo "Table exists and contains default values!"
+          else
+            echo "Error: Table or default values are missing!"
+            exit 1
+          fi
+          
+          # Verifica se o valor padrão está presente
+          if echo "$OUTPUT_B" | grep -q "COMIC_BOOKS" &&
+             echo "$OUTPUT_B" | grep -q "BOOKS" &&
+             echo "$OUTPUT_B" | grep -q "MOVIES" &&
+             echo "$OUTPUT_B" | grep -q "MUSIC"; then
             echo "Table exists and contains default values!"
           else
             echo "Error: Table or default values are missing!"
