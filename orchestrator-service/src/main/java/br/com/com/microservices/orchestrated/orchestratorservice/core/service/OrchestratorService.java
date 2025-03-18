@@ -49,6 +49,12 @@ public class OrchestratorService {
         notifyFinishedSaga(event);
     }
 
+    public void continueSaga(Event event){
+        var topic = getTopic(event);
+        log.info("SAGA CONTINUING FOR EVENT {}", event.getId());
+        sendToProducerWithTopic(event, topic);
+    }
+
     private void notifyFinishedSaga(Event event) {
         producer.sendEvent(jsonUtil.toJson(event), NOTIFY_ENDING.getTopic());
     }

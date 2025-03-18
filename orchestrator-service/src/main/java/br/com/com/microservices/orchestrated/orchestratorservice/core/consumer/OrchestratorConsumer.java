@@ -30,6 +30,7 @@ public class OrchestratorConsumer {
     public void consumerOrchestratorEvent(String payload) {
         log.info("Receiving orchestrator event {} from orchestrator topic",payload);
         var event = jsonUtil.toEvent(payload);
+        service.continueSaga(event);
     }
 
     @KafkaListener(
