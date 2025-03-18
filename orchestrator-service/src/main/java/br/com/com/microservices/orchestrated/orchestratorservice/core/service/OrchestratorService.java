@@ -14,6 +14,8 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 
+import static br.com.com.microservices.orchestrated.orchestratorservice.core.enums.ETopics.NOTIFY_ENDING;
+
 @Slf4j
 @Service
 @AllArgsConstructor
@@ -29,6 +31,18 @@ public class OrchestratorService {
         log.info("SAGA STARTED!");
         addHistory(event, "Saga started!");
         sendToProducerWithTopic(event, topic);
+    }
+
+    public void finishSagaSuccess(Event event){
+        event.setSource(EEventSource.ORCHESTRATOR);
+        event.setStatus(ESagaStatus.SUCCESS);
+        log.info("SAGA FINISHED SUCCESSFULLY FOR EVENT {}!", event.getId());
+        addHistory(event, "Saga finished successfully!");
+        notifyFinishedSaga(event);
+    }
+
+    private void notifyFinishedSaga(Event event) {
+        producer.sendEvent(jsonUtil.toJson(event), NOTIFY_ENDING.getTopic());
     }
 
     private void sendToProducerWithTopic(Event event, ETopics topic) {

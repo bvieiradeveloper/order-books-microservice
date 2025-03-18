@@ -39,6 +39,7 @@ public class OrchestratorConsumer {
     public void consumerFinishSuccessEvent(String payload) {
         log.info("Receiving finish success event {} from finish-success topic",payload);
         var event = jsonUtil.toEvent(payload);
+        service.finishSagaSuccess(event);
     }
 
     @KafkaListener(
