@@ -41,6 +41,14 @@ public class OrchestratorService {
         notifyFinishedSaga(event);
     }
 
+    public void finishSagaFail(Event event){
+        event.setSource(EEventSource.ORCHESTRATOR);
+        event.setStatus(ESagaStatus.FAIL);
+        log.info("SAGA FINISHED WITH ERRORS FOR EVENT {}!", event.getId());
+        addHistory(event, "Saga finished with errors!");
+        notifyFinishedSaga(event);
+    }
+
     private void notifyFinishedSaga(Event event) {
         producer.sendEvent(jsonUtil.toJson(event), NOTIFY_ENDING.getTopic());
     }

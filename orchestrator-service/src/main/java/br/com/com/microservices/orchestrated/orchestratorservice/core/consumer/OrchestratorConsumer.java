@@ -49,5 +49,6 @@ public class OrchestratorConsumer {
     public void consumerFinishFailEvent(String payload) {
         log.info("Receiving finish fail event {} from finish-fail topic",payload);
         var event = jsonUtil.toEvent(payload);
+        service.finishSagaFail(event);
     }
 }
