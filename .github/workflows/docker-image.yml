@@ -43,7 +43,15 @@ jobs:
           ./gradlew build -x test  # Executa o build do Gradle, ignorando os testes
           cd ..
 
-      # 5.1 Buildar a Product Validation Service com Gradle
+      # 5.1 Buildar Orchestrator Service com Gradle
+      - name: Build orchestrator-service with Gradle
+        run: |
+          cd ./orchestrator-service/  # Entra no diretório do projeto
+          chmod +x ./gradlew    # Dá permissão de execução ao gradlew
+          ./gradlew build -x test  # Executa o build do Gradle, ignorando os testes
+          cd ..
+
+      # 5.2 Buildar Product Validation Service com Gradle
       - name: Build product-validation-service with Gradle
         run: |
           cd ./product-validation-service/  # Entra no diretório do projeto
@@ -51,7 +59,7 @@ jobs:
           ./gradlew build -x test  # Executa o build do Gradle, ignorando os testes
           cd ..
 
-      # 5.2 Buildar a Payment  Service com Gradle
+      # 5.3 Buildar Payment  Service com Gradle
       - name: Build payment-service with Gradle
         run: |
           cd ./payment-service/  # Entra no diretório do projeto
@@ -59,7 +67,7 @@ jobs:
           ./gradlew build -x test  # Executa o build do Gradle, ignorando os testes
           cd ..
 
-      # 5.3 Buildar a inventory  Service com Gradle
+      # 5.4 Buildar inventory  Service com Gradle
       - name: Build inventory-service with Gradle
         run: |
           cd ./inventory-service/  # Entra no diretório do projeto
@@ -107,7 +115,11 @@ jobs:
              echo "$topics" | grep -q "payment-fail" &&
              echo "$topics" | grep -q "payment-success" &&
              echo "$topics" | grep -q "inventory-fail" &&
-             echo "$topics" | grep -q "inventory-success"; then
+             echo "$topics" | grep -q "inventory-success" &&
+             echo "$topics" | grep -q "finish-fail" &&
+             echo "$topics" | grep -q "finish-success" &&
+             echo "$topics" | grep -q "orchestrator" &&
+             echo "$topics" | grep -q "notify-ending"; then
             echo "All expected topics were created."
           else
             echo "Error: Expected topics not found!"

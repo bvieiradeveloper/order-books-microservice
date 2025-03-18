@@ -124,6 +124,18 @@ services:
       - KAFKA_BROKER=kafka:29092
     ports:
       - 3000:3000
+      -
+  orchestrator-service:
+    build: './orchestrator-service'
+    container_name: orchestrator-service
+    depends_on:
+      - kafka
+    networks:
+      - orchestrator-saga
+    environment:
+      - KAFKA_BROKER=kafka:29092
+    ports:
+      - 8080:8080
 
   product-validation-service:
     build: './product-validation-service'
