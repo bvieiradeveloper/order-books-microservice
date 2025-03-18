@@ -1,5 +1,6 @@
 package br.com.com.microservices.orchestrated.orchestratorservice.core.consumer;
 
+import br.com.com.microservices.orchestrated.orchestratorservice.core.service.OrchestratorService;
 import br.com.com.microservices.orchestrated.orchestratorservice.utils.JsonUtil;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -11,7 +12,7 @@ import org.springframework.stereotype.Component;
 @AllArgsConstructor
 public class OrchestratorConsumer {
     private final JsonUtil jsonUtil;
-
+    private final OrchestratorService service;
     @KafkaListener(
             groupId = "${spring.kafka.consumer.group-id}",
             topics = "${spring.kafka.topic.start-saga}"
@@ -19,6 +20,7 @@ public class OrchestratorConsumer {
     public void consumerStartSageEvent(String payload) {
         log.info("Receiving start saga event {} from start-saga topic",payload);
         var event = jsonUtil.toEvent(payload);
+        service.startSaga(event);
     }
 
     @KafkaListener(
