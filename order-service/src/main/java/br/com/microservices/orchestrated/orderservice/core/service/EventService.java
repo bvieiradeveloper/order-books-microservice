@@ -55,7 +55,7 @@ public class EventService {
         }
     }
 
-    public Event save(Event event){
+    private Event save(Event event){
         return repository.save(event);
     }
 }

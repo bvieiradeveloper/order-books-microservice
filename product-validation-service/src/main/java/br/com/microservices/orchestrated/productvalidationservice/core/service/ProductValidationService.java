@@ -65,7 +65,6 @@ public class ProductValidationService {
                 .createdAt(LocalDateTime.now())
                 .build();
         event.addToEventHistory(history);
-        producer.sendEvent(jsonUtil.toJson(event));
     }
 
     private void createValidation(Event event, boolean success) {
