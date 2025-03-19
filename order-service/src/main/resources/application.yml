@@ -4,7 +4,7 @@ server:
 spring:
 
   kafka:
-    bootstrap-servers: ${KAFKA_BROKER:localhost:9092}
+    bootstrap-servers: ${KAFKA_BROKER}
     topic:
       notify-ending: notify-ending
       start-saga: start-saga
@@ -15,4 +15,4 @@ spring:
   data:
     mongodb:
       database: admin
-      uri: ${MONGO_DB_URI:mongodb://admin:123456@localhost:27017}
+      uri: ${MONGO_DB_URI}

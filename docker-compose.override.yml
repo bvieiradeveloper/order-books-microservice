@@ -120,8 +120,8 @@ services:
     networks:
       - orchestrator-saga
     environment:
-      - MONGO_DB_URI=mongodb://admin:123456@order-db:27017
-      - KAFKA_BROKER=kafka:29092
+      - MONGO_DB_URI=${MONGO_DB_URI}
+      - KAFKA_BROKER=${KAFKA_BROKER}
     ports:
       - 3000:3000
 
