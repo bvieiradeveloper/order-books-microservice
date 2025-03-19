@@ -4,7 +4,10 @@ build/
 !gradle/wrapper/gradle-wrapper.jar
 !**/src/main/**/build/
 !**/src/test/**/build/
+
+# Ignor .env
 .env
+
 ### STS ###
 .apt_generated
 .classpath
