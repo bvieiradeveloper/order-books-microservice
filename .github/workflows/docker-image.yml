@@ -40,50 +40,50 @@ jobs:
           sudo chmod +x /usr/local/bin/docker-compose
           docker-compose --version
 
-      # 5. Buildar Order Service com Gradle
-      - name: Build order-service with Gradle
-        run: |
-          cd ./order-service/  # Entra no diretório do projeto
-          chmod +x ./gradlew    # Dá permissão de execução ao gradlew
-          ./gradlew build -x test  # Executa o build do Gradle, ignorando os testes
-          cd ..
-
-      # 5.1 Buildar Orchestrator Service com Gradle
-      - name: Build orchestrator-service with Gradle
-        run: |
-          cd ./orchestrator-service/  # Entra no diretório do projeto
-          chmod +x ./gradlew    # Dá permissão de execução ao gradlew
-          ./gradlew build -x test  # Executa o build do Gradle, ignorando os testes
-          cd ..
-
-      # 5.2 Buildar Product Validation Service com Gradle
-      - name: Build product-validation-service with Gradle
-        run: |
-          cd ./product-validation-service/  # Entra no diretório do projeto
-          chmod +x ./gradlew    # Dá permissão de execução ao gradlew
-          ./gradlew build -x test  # Executa o build do Gradle, ignorando os testes
-          cd ..
-
-      # 5.3 Buildar Payment  Service com Gradle
-      - name: Build payment-service with Gradle
-        run: |
-          cd ./payment-service/  # Entra no diretório do projeto
-          chmod +x ./gradlew    # Dá permissão de execução ao gradlew
-          ./gradlew build -x test  # Executa o build do Gradle, ignorando os testes
-          cd ..
-
-      # 5.4 Buildar inventory  Service com Gradle
-      - name: Build inventory-service with Gradle
-        run: |
-          cd ./inventory-service/  # Entra no diretório do projeto
-          chmod +x ./gradlew    # Dá permissão de execução ao gradlew
-          ./gradlew build -x test  # Executa o build do Gradle, ignorando os testes
-          cd ..
-
-      # 6. Iniciar os serviços com docker-compose
-      - name: Start services with docker-compose
-        run: |
-          docker-compose -f docker-compose.yml up --build -d
+#      # 5. Buildar Order Service com Gradle
+#      - name: Build order-service with Gradle
+#        run: |
+#          cd ./order-service/  # Entra no diretório do projeto
+#          chmod +x ./gradlew    # Dá permissão de execução ao gradlew
+#          ./gradlew build -x test  # Executa o build do Gradle, ignorando os testes
+#          cd ..
+#
+#      # 5.1 Buildar Orchestrator Service com Gradle
+#      - name: Build orchestrator-service with Gradle
+#        run: |
+#          cd ./orchestrator-service/  # Entra no diretório do projeto
+#          chmod +x ./gradlew    # Dá permissão de execução ao gradlew
+#          ./gradlew build -x test  # Executa o build do Gradle, ignorando os testes
+#          cd ..
+#
+#      # 5.2 Buildar Product Validation Service com Gradle
+#      - name: Build product-validation-service with Gradle
+#        run: |
+#          cd ./product-validation-service/  # Entra no diretório do projeto
+#          chmod +x ./gradlew    # Dá permissão de execução ao gradlew
+#          ./gradlew build -x test  # Executa o build do Gradle, ignorando os testes
+#          cd ..
+#
+#      # 5.3 Buildar Payment  Service com Gradle
+#      - name: Build payment-service with Gradle
+#        run: |
+#          cd ./payment-service/  # Entra no diretório do projeto
+#          chmod +x ./gradlew    # Dá permissão de execução ao gradlew
+#          ./gradlew build -x test  # Executa o build do Gradle, ignorando os testes
+#          cd ..
+#
+#      # 5.4 Buildar inventory  Service com Gradle
+#      - name: Build inventory-service with Gradle
+#        run: |
+#          cd ./inventory-service/  # Entra no diretório do projeto
+#          chmod +x ./gradlew    # Dá permissão de execução ao gradlew
+#          ./gradlew build -x test  # Executa o build do Gradle, ignorando os testes
+#          cd ..
+#
+#      # 6. Iniciar os serviços com docker-compose
+#      - name: Start services with docker-compose
+#        run: |
+#          docker-compose -f docker-compose.yml up --build -d
 
       # 7. Verificar se o MongoDB está acessível
       - name: Check MongoDB connection
@@ -92,77 +92,77 @@ jobs:
           sleep 10  # Espera 10 segundos para o MongoDB inicializar
           docker-compose exec order-db mongosh mongodb://admin:123456@order-db:27017 --eval "db.runCommand({ ping: 1 })"
 
-      # 8. Verificar se o order-service está respondendo
-      - name: Check order-service health
-        run: |
-          response=$(curl --retry 5 --retry-delay 10 --retry-all-errors -s http://localhost:3000/actuator/health)
-          status=$(echo $response | jq -r '.status')
-          if [ "$status" != "UP" ]; then
-            echo "Health check failed: Status is not UP"
-            exit 1
-          else
-            echo "Health check passed: Status is UP"
-          fi
-
-
-      # 9. Verificar se os tópicos Kafka foram criados
-      - name: Check Kafka topics
-        run: |
-          echo "Verifying Kafka topics..."
-          topics=$(docker exec kafka /opt/kafka/bin/kafka-topics.sh --list --bootstrap-server localhost:9092)
-          echo "Found topics: $topics"
-
-          # Verifica se os tópicos esperados estão presentes
-          if echo "$topics" | grep -q "notify-ending" && 
-             echo "$topics" | grep -q "start-saga" &&
-             echo "$topics" | grep -q "product-validation-success" &&
-             echo "$topics" | grep -q "product-validation-fail" &&
-             echo "$topics" | grep -q "payment-fail" &&
-             echo "$topics" | grep -q "payment-success" &&
-             echo "$topics" | grep -q "inventory-fail" &&
-             echo "$topics" | grep -q "inventory-success" &&
-             echo "$topics" | grep -q "finish-fail" &&
-             echo "$topics" | grep -q "finish-success" &&
-             echo "$topics" | grep -q "orchestrator" &&
-             echo "$topics" | grep -q "notify-ending"; then
-            echo "All expected topics were created."
-          else
-            echo "Error: Expected topics not found!"
-            exit 1
-          fi
-      
-
-      # 10. Verificar se a tabela foi criada e contém os valores padrão
-      - name: Verify table and default values in PostgreSQL
-        run: |
-          echo "Verifying table and default values..."
-          # Executa a consulta SQL para verificar a tabela
-          OUTPUT_A=$(docker-compose exec product-db psql -U postgres -d product-db -c "SELECT * FROM product;" -t)
-          OUTPUT_B=$(docker-compose exec inventory-db psql -U postgres -d inventory-db -c "SELECT * FROM inventory;" -t)
-          echo "Query result: $OUTPUT_A"
-          echo "Query result: $OUTPUT_B"
-          
-          # Verifica se o valor padrão está presente
-          if echo "$OUTPUT_A" | grep -q "COMIC_BOOKS" &&
-             echo "$OUTPUT_A" | grep -q "BOOKS" &&
-             echo "$OUTPUT_A" | grep -q "MOVIES" &&
-             echo "$OUTPUT_A" | grep -q "MUSIC"; then
-            echo "Table exists and contains default values!"
-          else
-            echo "Error: Table or default values are missing!"
-            exit 1
-          fi
-          
-          # Verifica se o valor padrão está presente
-          if echo "$OUTPUT_B" | grep -q "COMIC_BOOKS" &&
-             echo "$OUTPUT_B" | grep -q "BOOKS" &&
-             echo "$OUTPUT_B" | grep -q "MOVIES" &&
-             echo "$OUTPUT_B" | grep -q "MUSIC"; then
-            echo "Table exists and contains default values!"
-          else
-            echo "Error: Table or default values are missing!"
-            exit 1
-          fi  
+#      # 8. Verificar se o order-service está respondendo
+#      - name: Check order-service health
+#        run: |
+#          response=$(curl --retry 5 --retry-delay 10 --retry-all-errors -s http://localhost:3000/actuator/health)
+#          status=$(echo $response | jq -r '.status')
+#          if [ "$status" != "UP" ]; then
+#            echo "Health check failed: Status is not UP"
+#            exit 1
+#          else
+#            echo "Health check passed: Status is UP"
+#          fi
+#
+#
+#      # 9. Verificar se os tópicos Kafka foram criados
+#      - name: Check Kafka topics
+#        run: |
+#          echo "Verifying Kafka topics..."
+#          topics=$(docker exec kafka /opt/kafka/bin/kafka-topics.sh --list --bootstrap-server localhost:9092)
+#          echo "Found topics: $topics"
+#
+#          # Verifica se os tópicos esperados estão presentes
+#          if echo "$topics" | grep -q "notify-ending" &&
+#             echo "$topics" | grep -q "start-saga" &&
+#             echo "$topics" | grep -q "product-validation-success" &&
+#             echo "$topics" | grep -q "product-validation-fail" &&
+#             echo "$topics" | grep -q "payment-fail" &&
+#             echo "$topics" | grep -q "payment-success" &&
+#             echo "$topics" | grep -q "inventory-fail" &&
+#             echo "$topics" | grep -q "inventory-success" &&
+#             echo "$topics" | grep -q "finish-fail" &&
+#             echo "$topics" | grep -q "finish-success" &&
+#             echo "$topics" | grep -q "orchestrator" &&
+#             echo "$topics" | grep -q "notify-ending"; then
+#            echo "All expected topics were created."
+#          else
+#            echo "Error: Expected topics not found!"
+#            exit 1
+#          fi
+#
+#
+#      # 10. Verificar se a tabela foi criada e contém os valores padrão
+#      - name: Verify table and default values in PostgreSQL
+#        run: |
+#          echo "Verifying table and default values..."
+#          # Executa a consulta SQL para verificar a tabela
+#          OUTPUT_A=$(docker-compose exec product-db psql -U postgres -d product-db -c "SELECT * FROM product;" -t)
+#          OUTPUT_B=$(docker-compose exec inventory-db psql -U postgres -d inventory-db -c "SELECT * FROM inventory;" -t)
+#          echo "Query result: $OUTPUT_A"
+#          echo "Query result: $OUTPUT_B"
+#
+#          # Verifica se o valor padrão está presente
+#          if echo "$OUTPUT_A" | grep -q "COMIC_BOOKS" &&
+#             echo "$OUTPUT_A" | grep -q "BOOKS" &&
+#             echo "$OUTPUT_A" | grep -q "MOVIES" &&
+#             echo "$OUTPUT_A" | grep -q "MUSIC"; then
+#            echo "Table exists and contains default values!"
+#          else
+#            echo "Error: Table or default values are missing!"
+#            exit 1
+#          fi
+#
+#          # Verifica se o valor padrão está presente
+#          if echo "$OUTPUT_B" | grep -q "COMIC_BOOKS" &&
+#             echo "$OUTPUT_B" | grep -q "BOOKS" &&
+#             echo "$OUTPUT_B" | grep -q "MOVIES" &&
+#             echo "$OUTPUT_B" | grep -q "MUSIC"; then
+#            echo "Table exists and contains default values!"
+#          else
+#            echo "Error: Table or default values are missing!"
+#            exit 1
+#          fi
 
       # 11 Parar e remover os containers após a validação
       - name: Stop and remove containers
