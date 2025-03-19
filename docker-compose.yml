@@ -7,8 +7,8 @@ services:
     networks:
       - orchestrator-saga
     environment:
-      - MONGO_INITDB_ROOT_USERNAME=${MONGO_INITDB_ROOT_USERNAME}
-      - MONGO_INITDB_ROOT_PASSWORD=${MONGO_INITDB_ROOT_PASSWORD}
+      - MONGO_INITDB_ROOT_USERNAME=${ vars.MONGO_INITDB_ROOT_USERNAME }}
+      - MONGO_INITDB_ROOT_PASSWORD=${{ vars.MONGO_INITDB_ROOT_PASSWORD }}
     image: mongo:latest
 
 #  product-db:
