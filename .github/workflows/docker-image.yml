@@ -10,8 +10,8 @@ jobs:
   validate-services:
     runs-on: ubuntu-latest
     env:
-      MONGO_INITDB_ROOT_USERNAME: ${{ secrets.MONGO_INITDB_ROOT_USERNAME }}
-      MONGO_INITDB_ROOT_PASSWORD: ${{ secrets.MONGO_INITDB_ROOT_PASSWORD }}
+      MONGO_INITDB_ROOT_USERNAME: ${{ OrderBook.MONGO_INITDB_ROOT_USERNAME }}
+      MONGO_INITDB_ROOT_PASSWORD: ${{ OrderBook.MONGO_INITDB_ROOT_PASSWORD }}
       MONGO_DB_URI: ${{ secrets.MONGO_DB_URI }}
       KAFKA_BROKER: ${{ secrets.KAFKA_BROKER }}
 
