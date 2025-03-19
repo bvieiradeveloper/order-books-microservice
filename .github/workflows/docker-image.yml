@@ -10,10 +10,10 @@ jobs:
   validate-services:
     runs-on: ubuntu-latest
     env:
-      MONGO_INITDB_ROOT_USERNAME: ${{ vars.MONGO_INITDB_ROOT_USERNAME }}
-      MONGO_INITDB_ROOT_PASSWORD: ${{ vars.MONGO_INITDB_ROOT_PASSWORD }}
-      MONGO_DB_URI: ${{ vars.MONGO_DB_URI }}
-      KAFKA_BROKER: ${{ vars.KAFKA_BROKER }}
+      MONGO_INITDB_ROOT_USERNAME: ${{ secrets.MONGO_INITDB_ROOT_USERNAME }}
+      MONGO_INITDB_ROOT_PASSWORD: ${{ secrets.MONGO_INITDB_ROOT_PASSWORD }}
+      MONGO_DB_URI: ${{ secrets.MONGO_DB_URI }}
+      KAFKA_BROKER: ${{ secrets.KAFKA_BROKER }}
 
     steps:
       # 1. Checkout do repositório
@@ -83,10 +83,10 @@ jobs:
       # 6. Iniciar os serviços com docker-compose
       - name: Start services with docker-compose
         env:
-          MONGO_INITDB_ROOT_USERNAME: ${{ vars.MONGO_INITDB_ROOT_USERNAME }}
-          MONGO_INITDB_ROOT_PASSWORD: ${{ vars.MONGO_INITDB_ROOT_PASSWORD }}
-          MONGO_DB_URI: ${{ vars.MONGO_DB_URI }}
-          KAFKA_BROKER: ${{ vars.KAFKA_BROKER }}
+          MONGO_INITDB_ROOT_USERNAME: ${{ secrets.MONGO_INITDB_ROOT_USERNAME }}
+          MONGO_INITDB_ROOT_PASSWORD: ${{ secrets.MONGO_INITDB_ROOT_PASSWORD }}
+          MONGO_DB_URI: ${{ secrets.MONGO_DB_URI }}
+          KAFKA_BROKER: ${{ secrets.KAFKA_BROKER }}
         run: |
           docker-compose -f docker-compose.yml up --build -d
 
