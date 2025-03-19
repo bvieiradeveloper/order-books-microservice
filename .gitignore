@@ -5,7 +5,7 @@ build/
 !**/src/main/**/build/
 !**/src/test/**/build/
 
-# Ignor .env
+# Ignore .env
 .env
 
 ### STS ###
