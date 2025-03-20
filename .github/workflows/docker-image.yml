@@ -79,7 +79,20 @@ jobs:
 #          chmod +x ./gradlew    # Dá permissão de execução ao gradlew
 #          ./gradlew build -x test  # Executa o build do Gradle, ignorando os testes
 #          cd ..
-#
+#      
+       # 2. Verificar se as secrets estão sendo carregadas
+      - name: Test Secrets
+        env:
+          MONGO_INITDB_ROOT_USERNAME: ${{ secrets.MONGO_INITDB_ROOT_USERNAME }}
+          MONGO_INITDB_ROOT_PASSWORD: ${{ secrets.MONGO_INITDB_ROOT_PASSWORD }}
+          MONGO_DB_URI: ${{ secrets.MONGO_DB_URI }}
+          KAFKA_BROKER: ${{ secrets.KAFKA_BROKER }}
+        run: |
+          echo "MONGO_INITDB_ROOT_USERNAME: $MONGO_INITDB_ROOT_USERNAME"
+          echo "MONGO_INITDB_ROOT_PASSWORD: $MONGO_INITDB_ROOT_PASSWORD"
+          echo "MONGO_DB_URI: $MONGO_DB_URI"
+          echo "KAFKA_BROKER: $KAFKA_BROKER"
+          
       # 6. Iniciar os serviços com docker-compose
       - name: Start services with docker-compose
         env:
