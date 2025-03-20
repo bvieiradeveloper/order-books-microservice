@@ -100,7 +100,7 @@ jobs:
 
       - name: Check order-service health
         run: |
-          response=$(curl --retry 5 --retry-delay 10 --retry-all-errors -s http://order-service:3000/actuator/health)
+          response=$(curl --retry 5 --retry-delay 10 --retry-all-errors -s http://localhost:3000/actuator/health)
           status=$(echo $response | jq -r '.status')
           if [ "$status" != "UP" ]; then
             echo "Health check failed: Status is not UP"
