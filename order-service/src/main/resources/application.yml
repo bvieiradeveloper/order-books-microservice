@@ -4,7 +4,7 @@ server:
 spring:
 
   kafka:
-    bootstrap-servers: ${KAFKA_BROKER}
+    bootstrap-servers: ${KAFKA_BROKER:localhost:9092}
     topic:
       notify-ending: notify-ending
       start-saga: start-saga

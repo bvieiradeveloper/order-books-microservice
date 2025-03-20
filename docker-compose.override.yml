@@ -17,9 +17,9 @@ services:
     networks:
       orchestrator-saga:
     environment:
-      - POSTGRES_PASSWORD=postgres
-      - POSTGRES_USER=postgres
-      - POSTGRES_DB=product-db
+      - POSTGRES_PASSWORD=${POSTGRES_PRODUCT_DB_PASSWORD}
+      - POSTGRES_USER=${POSTGRES_PRODUCT_DB_USER}
+      - POSTGRES_DB=${POSTGRES_PRODUCT_DB_NAME}
     healthcheck:
       test: [ "CMD-SHELL", "pg_isready -U postgres" ]
       interval: 5s
@@ -34,9 +34,9 @@ services:
     networks:
       - orchestrator-saga
     environment:
-      - POSTGRES_PASSWORD=postgres
-      - POSTGRES_USER=postgres
-      - POSTGRES_DB=payment-db
+      - POSTGRES_PASSWORD=${POSTGRES_PAYMENT_DB_PASSWORD}
+      - POSTGRES_USER=${POSTGRES_PAYMENT_DB_USER}
+      - POSTGRES_DB=${POSTGRES_PAYMENT_DB_NAME}
     healthcheck:
       test: [ "CMD-SHELL", "pg_isready -U postgres" ]
       interval: 5s
@@ -51,9 +51,9 @@ services:
     networks:
       - orchestrator-saga
     environment:
-      - POSTGRES_PASSWORD=postgres
-      - POSTGRES_USER=postgres
-      - POSTGRES_DB=inventory-db
+      - POSTGRES_PASSWORD=${POSTGRES_INVENTORY_DB_PASSWORD}
+      - POSTGRES_USER=${POSTGRES_INVENTORY_DB_USER}
+      - POSTGRES_DB=${POSTGRES_INVENTORY_DB_NAME}
     healthcheck:
       test: [ "CMD-SHELL", "pg_isready -U postgres" ]
       interval: 5s
@@ -121,7 +121,7 @@ services:
       - orchestrator-saga
     environment:
       - MONGO_DB_URI=${MONGO_DB_URI}
-      - KAFKA_BROKER=${KAFKA_BROKER}
+      - KAFKA_BROKER=kafka:29092
     ports:
       - 3000:3000
 
@@ -149,11 +149,11 @@ services:
       - orchestrator-saga
     environment:
       - KAFKA_BROKER=kafka:29092
-      - DB_HOST=product-db
-      - DB_PORT=5432
-      - DB_NAME=product-db
-      - DB_USER=postgres
-      - DB_PASSWORD=postgres
+      - DB_HOST=${POSTGRES_PRODUCT_DB_HOST}
+      - DB_PORT=${POSTGRES_PRODUCT_DB_PORT}
+      - DB_NAME=${POSTGRES_PRODUCT_DB_NAME}
+      - DB_USER=${POSTGRES_PRODUCT_DB_USER}
+      - DB_PASSWORD=${POSTGRES_PRODUCT_DB_PASSWORD}
     ports:
       - 8090:8090
 
@@ -169,11 +169,11 @@ services:
       - orchestrator-saga
     environment:
       - KAFKA_BROKER=kafka:29092
-      - DB_HOST=payment-db
-      - DB_PORT=5432
-      - DB_NAME=payment-db
-      - DB_USER=postgres
-      - DB_PASSWORD=postgres
+      - DB_HOST=${POSTGRES_PAYMENT_DB_HOST}
+      - DB_PORT=${POSTGRES_PAYMENT_DB_PORT}
+      - DB_NAME=${POSTGRES_PAYMENT_DB_NAME}
+      - DB_USER=${POSTGRES_PAYMENT_DB_USER}
+      - DB_PASSWORD=${POSTGRES_PAYMENT_DB_PASSWORD}
     ports:
       - 8091:8091
 
@@ -189,11 +189,11 @@ services:
       - orchestrator-saga
     environment:
       - KAFKA_BROKER=kafka:29092
-      - DB_HOST=inventory-db
-      - DB_PORT=5432
-      - DB_NAME=inventory-db
-      - DB_USER=postgres
-      - DB_PASSWORD=postgres
+      - DB_HOST=${POSTGRES_INVENTORY_DB_HOST}
+      - DB_PORT=${POSTGRES_INVENTORY_DB_PORT}
+      - DB_NAME=${POSTGRES_INVENTORY_DB_NAME}
+      - DB_USER=${POSTGRES_INVENTORY_DB_USER}
+      - DB_PASSWORD=${POSTGRES_INVENTORY_DB_PASSWORD}
     ports:
       - 8092:8092
 
