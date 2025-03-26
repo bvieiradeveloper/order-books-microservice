@@ -215,6 +215,22 @@ services:
     ports:
       - 8092:8092
 
+  authentication-service:
+    build: './authentication-service'
+    container_name: authentication-service
+    depends_on:
+      stateless-auth-db:
+        condition: service_healthy
+    networks:
+      - orchestrator-saga
+    environment:
+      - DB_HOST=${POSTGRES_AUTH_STATELESS_DB_HOST}
+      - DB_PORT=${POSTGRES_AUTH_STATELESS_DB_PORT}
+      - DB_NAME=${POSTGRES_AUTH_STATELESS_DB_NAME}
+      - DB_USER=${POSTGRES_AUTH_STATELESS_DB_USER}
+      - DB_PASSWORD=${POSTGRES_AUTH_STATELESS_DB_PASSWORD}
+    ports:
+      - 3001:3001
 
 networks:
   orchestrator-saga:
