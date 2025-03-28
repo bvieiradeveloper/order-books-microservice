@@ -1,4 +1,3 @@
 package br.com.com.microservices.orchestrated.authenticationservice.core.dto;
 
-public class AuthRequest {
-}
+public record AuthRequest(String username, String password) {}
