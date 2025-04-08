@@ -1,4 +1,21 @@
 services:
+  stateless-auth-db:
+    container_name: stateless-auth-db
+    image: postgres:12.5-alpine
+    environment:
+      - POSTGRES_PASSWORD=${POSTGRES_AUTH_STATELESS_DB_PASSWORD}
+      - POSTGRES_USER=${POSTGRES_AUTH_STATELESS_DB_USER}
+      - POSTGRES_DB=${POSTGRES_AUTH_STATELESS_DB_NAME}
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U postgres" ]
+      interval: 5s
+      timeout: 10s
+      retries: 5
+    networks:
+      - orchestrator-saga
+    ports:
+      - 5435:5432
+
   order-db:
     ports:
       - '27017:27017'
@@ -179,6 +196,22 @@ services:
     ports:
       - 8092:8092
 
+  authentication-service:
+    build: './authentication-service'
+    container_name: authentication-service
+    depends_on:
+      stateless-auth-db:
+        condition: service_healthy
+    networks:
+      - orchestrator-saga
+    environment:
+      - DB_HOST=${POSTGRES_AUTH_STATELESS_DB_HOST}
+      - DB_PORT=${POSTGRES_AUTH_STATELESS_DB_PORT}
+      - DB_NAME=${POSTGRES_AUTH_STATELESS_DB_NAME}
+      - DB_USER=${POSTGRES_AUTH_STATELESS_DB_USER}
+      - DB_PASSWORD=${POSTGRES_AUTH_STATELESS_DB_PASSWORD}
+    ports:
+      - 3001:3001
 
 networks:
   orchestrator-saga:

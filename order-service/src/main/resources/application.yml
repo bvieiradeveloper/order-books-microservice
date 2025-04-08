@@ -1,6 +1,10 @@
 server:
   port: 3000
 
+app:
+  token:
+    secret-key: ${JWT_SECRET_KEY}
+
 spring:
 
   kafka:

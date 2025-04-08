@@ -31,6 +31,12 @@ jobs:
       POSTGRES_PRODUCT_DB_NAME: ${{ secrets.POSTGRES_PRODUCT_DB_NAME }}
       POSTGRES_PAYMENT_DB_NAME: ${{ secrets.POSTGRES_PAYMENT_DB_NAME }}
       POSTGRES_INVENTORY_DB_NAME: ${{ secrets.POSTGRES_INVENTORY_DB_NAME }}
+      POSTGRES_AUTH_STATELESS_DB_PASSWORD: ${{ secrets.POSTGRES_AUTH_STATELESS_DB_PASSWORD }}
+      POSTGRES_AUTH_STATELESS_DB_USER: ${{ secrets.POSTGRES_AUTH_STATELESS_DB_USER }}
+      POSTGRES_AUTH_STATELESS_DB_PORT: ${{ secrets.POSTGRES_AUTH_STATELESS_DB_PORT }}
+      POSTGRES_AUTH_STATELESS_DB_HOST: ${{ secrets.POSTGRES_AUTH_STATELESS_DB_HOST }}
+      POSTGRES_AUTH_STATELESS_DB_NAME: ${{ secrets.POSTGRES_AUTH_STATELESS_DB_NAME }}
+      JWT_SECRET_KEY: ${{ secrets.JWT_SECRET_KEY }}
 
     steps:
       - name: Checkout code
@@ -52,6 +58,13 @@ jobs:
           sudo curl -L "https://github.com/docker/compose/releases/download/v2.23.0/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
           sudo chmod +x /usr/local/bin/docker-compose
           docker-compose --version
+
+      - name: Build authentication-service with Gradle
+        run: |
+          cd ./authentication-service/
+          chmod +x ./gradlew
+          ./gradlew build -x test
+          cd ..
 
       - name: Build order-service with Gradle
         run: |
@@ -139,9 +152,11 @@ jobs:
           # Executa a consulta SQL para verificar a tabela
           OUTPUT_A=$(docker-compose exec product-db psql -U postgres -d product-db -c "SELECT * FROM product;" -t)
           OUTPUT_B=$(docker-compose exec inventory-db psql -U postgres -d inventory-db -c "SELECT * FROM inventory;" -t)
+          OUTPUT_C=$(docker-compose exec inventory-db psql -U postgres -d inventory-db -c "SELECT * FROM inventory;" -t)
           echo "Query result: $OUTPUT_A"
           echo "Query result: $OUTPUT_B"
-
+          echo "Query result: $OUTPUT_C"
+          
           if echo "$OUTPUT_A" | grep -q "COMIC_BOOKS" &&
              echo "$OUTPUT_A" | grep -q "BOOKS" &&
              echo "$OUTPUT_A" | grep -q "MOVIES" &&
@@ -156,6 +171,14 @@ jobs:
              echo "$OUTPUT_B" | grep -q "BOOKS" &&
              echo "$OUTPUT_B" | grep -q "MOVIES" &&
              echo "$OUTPUT_B" | grep -q "MUSIC"; then
+            echo "Table exists and contains default values!"
+          else
+            echo "Error: Table or default values are missing!"
+            exit 1
+          fi
+          
+          if echo "$OUTPUT_C" | grep -q "user.test" &&
+             echo "$OUTPUT_C" | grep -q "user.new.test"; then
             echo "Table exists and contains default values!"
           else
             echo "Error: Table or default values are missing!"
