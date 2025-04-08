@@ -37,6 +37,7 @@ public class AuthService {
     public TokenDTO validateToken(String accessToken){
         validateExistingToken(accessToken);
         jwtService.validateAccessToken(accessToken);
+
         return new TokenDTO(accessToken);
     }
 
